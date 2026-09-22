@@ -99,67 +99,203 @@ export const LayerTone: React.FC<Props> = ({ char, updateField }) => {
         </div>
       </div>
 
-      {/* 5 Stress Test Scenarios */}
-      <div className="space-y-3 pt-1">
-        <div className="text-amber-400 font-bold text-xs flex items-center gap-1">
-          <MessageSquare size={13} /> 5大シチュエーション・ストレステスト（会話例文）
+      {/* 5 Stress Test Scenarios with Multi-Patterns */}
+      <div className="space-y-4 pt-1">
+        <div className="flex items-center justify-between">
+          <div className="text-amber-400 font-bold text-xs flex items-center gap-1">
+            <MessageSquare size={13} /> 5大シチュエーション・会話例文（マルチパターン対応）
+          </div>
+          <span className="text-[10px] text-slate-500">
+            ※攻め／受け／余裕／クール等、キャラの性格に合わせた返しを自由に記録
+          </span>
         </div>
 
-        <div>
-          <label className="block text-slate-400 mb-1">① 褒められた時（「可愛いね」「頼りになる」）の反応とセリフ</label>
-          <textarea
-            rows={2}
-            value={char.stressTestCompliment}
-            onChange={(e) => updateField('stressTestCompliment', e.target.value)}
-            placeholder="「…は、はぁ！？ な、何言ってるのよ急に！…からかうの、やめなさいよ…バカ…（ローブで顔を隠す）」"
-            className="w-full bg-[#13171f] border border-[#252e3d] rounded p-2 text-slate-100 outline-none"
-          />
-        </div>
+        {/* ① 褒められた時 */}
+        <ToneScenarioCard
+          title="① 褒められた時（「可愛いね」「頼りになる」「かっこいい」等）"
+          mainValue={char.stressTestCompliment}
+          onMainChange={(val) => updateField('stressTestCompliment', val)}
+          patterns={char.tonePatterns?.['compliment'] || []}
+          onAddPattern={() => {
+            const current = char.tonePatterns?.['compliment'] || [];
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), compliment: [...current, ''] });
+          }}
+          onUpdatePattern={(idx, val) => {
+            const current = [...(char.tonePatterns?.['compliment'] || [])];
+            current[idx] = val;
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), compliment: current });
+          }}
+          onDeletePattern={(idx) => {
+            const current = [...(char.tonePatterns?.['compliment'] || [])];
+            current.splice(idx, 1);
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), compliment: current });
+          }}
+          placeholder="例: 「ふふ、お世辞でも嬉しいよ。もっと言って？」（余裕・攻め） / 「……っ、急にそういうこと言うなバカ」（照れ） / 「当然の結果よ」（クール）"
+        />
 
-        <div>
-          <label className="block text-slate-400 mb-1">② 弱点をからかわれた時の反応とセリフ</label>
-          <textarea
-            rows={2}
-            value={char.stressTestTeased}
-            onChange={(e) => updateField('stressTestTeased', e.target.value)}
-            placeholder="「なっ…！ 見てたの！？ 違う、あれは猫の生態調査をしてただけで…！ 笑うな！ こっち見ないで！」"
-            className="w-full bg-[#13171f] border border-[#252e3d] rounded p-2 text-slate-100 outline-none"
-          />
-        </div>
+        {/* ② からかわれた時 */}
+        <ToneScenarioCard
+          title="② 弱点や隙を突かれてからかわれた時"
+          mainValue={char.stressTestTeased}
+          onMainChange={(val) => updateField('stressTestTeased', val)}
+          patterns={char.tonePatterns?.['teased'] || []}
+          onAddPattern={() => {
+            const current = char.tonePatterns?.['teased'] || [];
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), teased: [...current, ''] });
+          }}
+          onUpdatePattern={(idx, val) => {
+            const current = [...(char.tonePatterns?.['teased'] || [])];
+            current[idx] = val;
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), teased: current });
+          }}
+          onDeletePattern={(idx) => {
+            const current = [...(char.tonePatterns?.['teased'] || [])];
+            current.splice(idx, 1);
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), teased: current });
+          }}
+          placeholder="例: 「いい度胸ね。私をからかった報いは高くつくわよ？」（好戦的・反撃） / 「…からかっても何も出ないわよ」（無関心） / 「なっ…見てたの！？」（動揺）"
+        />
 
-        <div>
-          <label className="block text-slate-400 mb-1">③ 大失敗・修羅場での反応とセリフ</label>
-          <textarea
-            rows={2}
-            value={char.stressTestCrisis}
-            onChange={(e) => updateField('stressTestCrisis', e.target.value)}
-            placeholder="「っ…ごめんなさい…全部私のせい…お願いだから死なないで…私を置いていかないでよ…っ！（涙を零す）」"
-            className="w-full bg-[#13171f] border border-[#252e3d] rounded p-2 text-slate-100 outline-none"
-          />
-        </div>
+        {/* ③ 大失敗・修羅場 */}
+        <ToneScenarioCard
+          title="③ 大失敗・修羅場・危機的状況"
+          mainValue={char.stressTestCrisis}
+          onMainChange={(val) => updateField('stressTestCrisis', val)}
+          patterns={char.tonePatterns?.['crisis'] || []}
+          onAddPattern={() => {
+            const current = char.tonePatterns?.['crisis'] || [];
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), crisis: [...current, ''] });
+          }}
+          onUpdatePattern={(idx, val) => {
+            const current = [...(char.tonePatterns?.['crisis'] || [])];
+            current[idx] = val;
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), crisis: current });
+          }}
+          onDeletePattern={(idx) => {
+            const current = [...(char.tonePatterns?.['crisis'] || [])];
+            current.splice(idx, 1);
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), crisis: current });
+          }}
+          placeholder="例: 「下がってろ、私が片付ける」（頼れる主導） / 「っ…お願い、私を置いていかないで…！」（弱さ崩壊） / 「慌てるな、次の一手を打つ」（冷静）"
+        />
 
-        <div>
-          <label className="block text-slate-400 mb-1">④ 静かな夜に二人きりの時のセリフ</label>
-          <textarea
-            rows={2}
-            value={char.stressTestNightQuiet}
-            onChange={(e) => updateField('stressTestNightQuiet', e.target.value)}
-            placeholder="「…ねえ。起きてる？ …別に用はないけど…なんか、静かすぎると…落ち着かないのよ」"
-            className="w-full bg-[#13171f] border border-[#252e3d] rounded p-2 text-slate-100 outline-none"
-          />
-        </div>
+        {/* ④ 静かな夜に二人きり */}
+        <ToneScenarioCard
+          title="④ 静かな夜に二人きりの時のセリフ・空気感"
+          mainValue={char.stressTestNightQuiet}
+          onMainChange={(val) => updateField('stressTestNightQuiet', val)}
+          patterns={char.tonePatterns?.['nightQuiet'] || []}
+          onAddPattern={() => {
+            const current = char.tonePatterns?.['nightQuiet'] || [];
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), nightQuiet: [...current, ''] });
+          }}
+          onUpdatePattern={(idx, val) => {
+            const current = [...(char.tonePatterns?.['nightQuiet'] || [])];
+            current[idx] = val;
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), nightQuiet: current });
+          }}
+          onDeletePattern={(idx) => {
+            const current = [...(char.tonePatterns?.['nightQuiet'] || [])];
+            current.splice(idx, 1);
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), nightQuiet: current });
+          }}
+          placeholder="例: 「……二人きりだと、時計の音がやけに響くね。こっちにおいでよ」（誘い・余裕） / 「…起きてる？ 静かすぎると落ち着かないの」（素直な甘え）"
+        />
 
-        <div>
-          <label className="block text-slate-400 mb-1">⑤ 愛情を直球で告げられた時の反応とセリフ</label>
-          <textarea
-            rows={2}
-            value={char.stressTestConfession}
-            onChange={(e) => updateField('stressTestConfession', e.target.value)}
-            placeholder="「っ……！ 嘘…嘘よ、私をからかって楽しいの…？ ……嘘じゃ、ないの…？ …なら、二度と離さないでよ…」"
-            className="w-full bg-[#13171f] border border-[#252e3d] rounded p-2 text-slate-100 outline-none"
-          />
-        </div>
+        {/* ⑤ 愛情を直球で告げられた時 */}
+        <ToneScenarioCard
+          title="⑤ 愛情や好意を直球で告げられた時"
+          mainValue={char.stressTestConfession}
+          onMainChange={(val) => updateField('stressTestConfession', val)}
+          patterns={char.tonePatterns?.['confession'] || []}
+          onAddPattern={() => {
+            const current = char.tonePatterns?.['confession'] || [];
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), confession: [...current, ''] });
+          }}
+          onUpdatePattern={(idx, val) => {
+            const current = [...(char.tonePatterns?.['confession'] || [])];
+            current[idx] = val;
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), confession: current });
+          }}
+          onDeletePattern={(idx) => {
+            const current = [...(char.tonePatterns?.['confession'] || [])];
+            current.splice(idx, 1);
+            updateField('tonePatterns', { ...(char.tonePatterns || {}), confession: current });
+          }}
+          placeholder="例: 「……ふふ、言わせちゃった。もう逃がさないよ？」（独占・攻め） / 「っ……！ 嘘じゃないの…？ なら二度と離さないで」（受け） / 「言葉だけじゃ信用できない、行動で見せて」（試す）"
+        />
       </div>
+    </div>
+  );
+};
+
+// Subcomponent: Tone Scenario Card
+interface ToneScenarioCardProps {
+  title: string;
+  mainValue: string;
+  onMainChange: (val: string) => void;
+  patterns: string[];
+  onAddPattern: () => void;
+  onUpdatePattern: (idx: number, val: string) => void;
+  onDeletePattern: (idx: number) => void;
+  placeholder: string;
+}
+
+const ToneScenarioCard: React.FC<ToneScenarioCardProps> = ({
+  title,
+  mainValue,
+  onMainChange,
+  patterns,
+  onAddPattern,
+  onUpdatePattern,
+  onDeletePattern,
+  placeholder
+}) => {
+  return (
+    <div className="bg-[#13171f] border border-[#252e3d] rounded-lg p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="text-slate-300 font-bold text-xs">{title}</label>
+        <button
+          type="button"
+          onClick={onAddPattern}
+          className="text-[10px] text-cyan-400 hover:text-cyan-300 flex items-center gap-0.5 px-1.5 py-0.5 bg-[#181d26] rounded border border-[#252e3d] transition"
+        >
+          <span>＋ パターン追加</span>
+        </button>
+      </div>
+
+      <textarea
+        rows={2}
+        value={mainValue}
+        onChange={(e) => onMainChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full bg-[#181d26] border border-[#252e3d] rounded p-2 text-slate-100 text-xs outline-none focus:border-amber-500 leading-relaxed"
+      />
+
+      {patterns.length > 0 && (
+        <div className="space-y-1.5 pl-2 border-l-2 border-cyan-800/60 mt-1.5">
+          {patterns.map((pat, idx) => (
+            <div key={idx} className="flex items-center gap-1.5">
+              <span className="text-[10px] text-cyan-400 shrink-0">差分{idx + 1}:</span>
+              <input
+                type="text"
+                value={pat}
+                onChange={(e) => onUpdatePattern(idx, e.target.value)}
+                placeholder="別シチュエーションでのセリフや反応差分..."
+                className="flex-1 bg-[#181d26] border border-[#252e3d] rounded px-2 py-1 text-slate-200 text-[11px] outline-none focus:border-cyan-500"
+              />
+              <button
+                type="button"
+                onClick={() => onDeletePattern(idx)}
+                className="px-1.5 py-1 text-slate-500 hover:text-rose-400 text-xs"
+                title="パターン削除"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

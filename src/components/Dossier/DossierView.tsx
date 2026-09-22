@@ -925,33 +925,69 @@ export const DossierView: React.FC<DossierViewProps> = ({
                 {char.positionType === 'top' ? '完全攻め (Top)' : char.positionType === 'bottom' ? '完全受け (Bottom)' : char.positionType === 'switch' ? 'リバ / 両対応 (Switch)' : char.positionType === 'reversal' ? '豹変リバ (Reversal)' : '未設定'}
               </span>
             </span>
-            <span className="text-[10px] text-pink-400 font-mono">TOP / DOMINANT PROFILE</span>
+            <span className="text-[10px] text-pink-400 font-mono">POSITION & DYNAMICS</span>
           </div>
 
           {(char.dominantLeadStyle || char.dominantVerbalCommand || char.dominantPossessionDrive || char.dominantAftercare) ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
               {char.dominantLeadStyle && (
                 <div className="bg-[#181424] p-2.5 rounded border border-pink-900/20">
-                  <span className="text-pink-300 font-bold block text-[10px] mb-0.5">【攻め時の主導権・手つき・焦らし方】</span>
+                  <span className="text-pink-300 font-bold block text-[10px] mb-0.5">【攻め/リード時の手つき・主導権・距離感】</span>
                   <p className="text-slate-300 text-xs leading-relaxed">{char.dominantLeadStyle}</p>
+                  {char.dominantPatterns?.['dominantLeadStyle'] && char.dominantPatterns['dominantLeadStyle'].length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-pink-950/60 space-y-1">
+                      {char.dominantPatterns['dominantLeadStyle'].map((pat, i) => (
+                        <p key={i} className="text-[10px] text-pink-300/80 bg-pink-950/30 px-1.5 py-0.5 rounded">
+                          ↳ {pat}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
               {char.dominantVerbalCommand && (
                 <div className="bg-[#181424] p-2.5 rounded border border-pink-900/20">
-                  <span className="text-rose-300 font-bold block text-[10px] mb-0.5">【攻め時の言葉責め・支配命令】</span>
+                  <span className="text-rose-300 font-bold block text-[10px] mb-0.5">【攻め/リード時の言葉責め・命令・吐息】</span>
                   <p className="text-slate-300 text-xs leading-relaxed">{char.dominantVerbalCommand}</p>
+                  {char.dominantPatterns?.['dominantVerbalCommand'] && char.dominantPatterns['dominantVerbalCommand'].length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-pink-950/60 space-y-1">
+                      {char.dominantPatterns['dominantVerbalCommand'].map((pat, i) => (
+                        <p key={i} className="text-[10px] text-rose-300/80 bg-pink-950/30 px-1.5 py-0.5 rounded">
+                          ↳ {pat}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
               {char.dominantPossessionDrive && (
                 <div className="bg-[#181424] p-2.5 rounded border border-pink-900/20">
-                  <span className="text-slate-300 font-bold block text-[10px] mb-0.5">【相手を追い詰めるツボ・支配欲】</span>
+                  <span className="text-slate-300 font-bold block text-[10px] mb-0.5">【相手を追い詰めるツボ・支配欲・独占心】</span>
                   <p className="text-slate-300 text-xs leading-relaxed">{char.dominantPossessionDrive}</p>
+                  {char.dominantPatterns?.['dominantPossessionDrive'] && char.dominantPatterns['dominantPossessionDrive'].length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-pink-950/60 space-y-1">
+                      {char.dominantPatterns['dominantPossessionDrive'].map((pat, i) => (
+                        <p key={i} className="text-[10px] text-purple-300/80 bg-pink-950/30 px-1.5 py-0.5 rounded">
+                          ↳ {pat}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
               {char.dominantAftercare && (
                 <div className="bg-[#181424] p-2.5 rounded border border-pink-900/20">
-                  <span className="text-amber-300 font-bold block text-[10px] mb-0.5">【攻め側としてのアフターケア・甘やかし】</span>
+                  <span className="text-amber-300 font-bold block text-[10px] mb-0.5">【攻め/リード側としてのアフターケア・甘やかし】</span>
                   <p className="text-slate-300 text-xs leading-relaxed">{char.dominantAftercare}</p>
+                  {char.dominantPatterns?.['dominantAftercare'] && char.dominantPatterns['dominantAftercare'].length > 0 && (
+                    <div className="mt-1.5 pt-1.5 border-t border-pink-950/60 space-y-1">
+                      {char.dominantPatterns['dominantAftercare'].map((pat, i) => (
+                        <p key={i} className="text-[10px] text-amber-300/80 bg-pink-950/30 px-1.5 py-0.5 rounded">
+                          ↳ {pat}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -967,63 +1003,64 @@ export const DossierView: React.FC<DossierViewProps> = ({
             <span className="text-[10px] text-purple-400 font-mono">SFW ➔ NSFW GRADATION</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-7 gap-1.5">
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-slate-400 font-bold block text-[10px]">Lv1 視線・距離</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel1 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-cyan-300 font-bold block text-[10px]">Lv2 偶発的接触</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel2 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-emerald-300 font-bold block text-[10px]">Lv3 スキンシップ</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel3 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-amber-300 font-bold block text-[10px]">Lv4 境界線・密着</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel4 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-rose-300 font-bold block text-[10px]">Lv5 理性の融解</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel5 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-pink-300 font-bold block text-[10px]">Lv6 夜の入口</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel6 || '未設定'}</p>
-            </div>
-            <div className="bg-[#10141d] p-2 rounded border border-purple-900/30">
-              <span className="text-purple-300 font-bold block text-[10px]">Lv7 完全開放</span>
-              <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{char.intimacyLevel7 || '未設定'}</p>
-            </div>
+            {[
+              { lv: 'Lv1 視線・距離感', text: char.intimacyLevel1, key: 'intimacyLevel1', col: 'text-slate-400' },
+              { lv: 'Lv2 偶発的接触', text: char.intimacyLevel2, key: 'intimacyLevel2', col: 'text-cyan-300' },
+              { lv: 'Lv3 スキンシップ', text: char.intimacyLevel3, key: 'intimacyLevel3', col: 'text-emerald-300' },
+              { lv: 'Lv4 境界線・密着', text: char.intimacyLevel4, key: 'intimacyLevel4', col: 'text-amber-300' },
+              { lv: 'Lv5 理性の融解', text: char.intimacyLevel5, key: 'intimacyLevel5', col: 'text-rose-300' },
+              { lv: 'Lv6 夜の入口', text: char.intimacyLevel6, key: 'intimacyLevel6', col: 'text-pink-300' },
+              { lv: 'Lv7 完全開放', text: char.intimacyLevel7, key: 'intimacyLevel7', col: 'text-purple-300' },
+            ].map((slot) => {
+              const patterns = char.intimacyPatterns?.[slot.key] || [];
+              return (
+                <div key={slot.key} className="bg-[#10141d] p-2 rounded border border-purple-900/30 flex flex-col justify-between">
+                  <div>
+                    <span className={`${slot.col} font-bold block text-[10px]`}>{slot.lv}</span>
+                    <p className="text-slate-300 text-[11px] mt-1 line-clamp-3 leading-snug">{slot.text || '未設定'}</p>
+                    {patterns.length > 0 && (
+                      <div className="mt-1 pt-1 border-t border-purple-900/40 space-y-0.5">
+                        {patterns.map((p, idx) => (
+                          <p key={idx} className="text-[9px] text-purple-300/80 truncate" title={p}>
+                            + {p}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* Sensory, Dynamic & Aftercare Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-2 border-t border-purple-900/30">
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-purple-300 font-bold block text-[11px] mb-1">急所・敏感ゾーン</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.sensitiveAreas || '未設定'}</p>
-          </div>
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-purple-300 font-bold block text-[11px] mb-1">息遣い・声のトーン</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.voiceBreathing || '未設定'}</p>
-          </div>
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-purple-300 font-bold block text-[11px] mb-1">視線・表情・仕草</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.gazeExpression || '未設定'}</p>
-          </div>
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-pink-300 font-bold block text-[11px] mb-1">主導権・攻守ダイナミクス</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.dominanceRole || '未設定'}</p>
-          </div>
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-amber-300 font-bold block text-[11px] mb-1">事前の誘い方・戸惑い</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.preIntimacyBehavior || '未設定'}</p>
-          </div>
-          <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
-            <span className="text-amber-300 font-bold block text-[11px] mb-1">★ 事後の余韻・アフターケア</span>
-            <p className="text-slate-300 text-xs leading-relaxed">{char.aftercareBehavior || '未設定'}</p>
-          </div>
+          {[
+            { label: '急所・敏感ゾーン', text: char.sensitiveAreas, key: 'sensitiveAreas', col: 'text-purple-300' },
+            { label: '息遣い・声のトーン', text: char.voiceBreathing, key: 'voiceBreathing', col: 'text-purple-300' },
+            { label: '視線・表情・仕草', text: char.gazeExpression, key: 'gazeExpression', col: 'text-purple-300' },
+            { label: '主導権・攻守ダイナミクス', text: char.dominanceRole, key: 'dominanceRole', col: 'text-pink-300' },
+            { label: '事前の誘い方・戸惑い', text: char.preIntimacyBehavior, key: 'preIntimacyBehavior', col: 'text-amber-300' },
+            { label: '★ 事後の余韻・アフターケア', text: char.aftercareBehavior, key: 'aftercareBehavior', col: 'text-amber-300' },
+          ].map((item) => {
+            const patterns = char.dominantPatterns?.[item.key] || [];
+            return (
+              <div key={item.key} className="bg-[#10141d] p-2.5 rounded border border-purple-900/30">
+                <span className={`${item.col} font-bold block text-[11px] mb-1`}>{item.label}</span>
+                <p className="text-slate-300 text-xs leading-relaxed">{item.text || '未設定'}</p>
+                {patterns.length > 0 && (
+                  <div className="mt-1.5 pt-1.5 border-t border-purple-950/60 space-y-1">
+                    {patterns.map((pat, i) => (
+                      <p key={i} className="text-[10px] text-purple-300/80 bg-purple-950/40 px-1.5 py-0.5 rounded">
+                        ↳ {pat}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {(char.fetishObsession || char.intimacyBoundaries) && (
@@ -1032,12 +1069,30 @@ export const DossierView: React.FC<DossierViewProps> = ({
               <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/20">
                 <span className="text-purple-300 font-bold block text-[10px] mb-0.5">嗜好・フェチ・執着</span>
                 <p className="text-slate-300 text-xs leading-relaxed">{char.fetishObsession}</p>
+                {char.dominantPatterns?.['fetishObsession'] && char.dominantPatterns['fetishObsession'].length > 0 && (
+                  <div className="mt-1.5 pt-1.5 border-t border-purple-950/60 space-y-1">
+                    {char.dominantPatterns['fetishObsession'].map((pat, i) => (
+                      <p key={i} className="text-[10px] text-purple-300/80 bg-purple-950/40 px-1.5 py-0.5 rounded">
+                        ↳ {pat}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {char.intimacyBoundaries && (
               <div className="bg-[#10141d] p-2.5 rounded border border-purple-900/20">
                 <span className="text-slate-400 font-bold block text-[10px] mb-0.5">境界線・許容限度・NG</span>
                 <p className="text-slate-300 text-xs leading-relaxed">{char.intimacyBoundaries}</p>
+                {char.dominantPatterns?.['intimacyBoundaries'] && char.dominantPatterns['intimacyBoundaries'].length > 0 && (
+                  <div className="mt-1.5 pt-1.5 border-t border-purple-950/60 space-y-1">
+                    {char.dominantPatterns['intimacyBoundaries'].map((pat, i) => (
+                      <p key={i} className="text-[10px] text-slate-400/80 bg-slate-950/40 px-1.5 py-0.5 rounded">
+                        ↳ {pat}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1129,25 +1184,32 @@ export const DossierView: React.FC<DossierViewProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-          {char.stressTestCompliment && (
-            <div className="bg-slate-950/80 p-3 rounded border border-slate-800">
-              <span className="text-slate-500 block text-[10px] font-mono mb-1">褒められた時:</span>
-              <p className="text-slate-200 italic">{char.stressTestCompliment}</p>
-            </div>
-          )}
-          {char.stressTestTeased && (
-            <div className="bg-slate-950/80 p-3 rounded border border-slate-800">
-              <span className="text-slate-500 block text-[10px] font-mono mb-1">からかわれた時:</span>
-              <p className="text-slate-200 italic">{char.stressTestTeased}</p>
-            </div>
-          )}
-          {char.stressTestCrisis && (
-            <div className="bg-slate-950/80 p-3 rounded border border-slate-800">
-              <span className="text-slate-500 block text-[10px] font-mono mb-1">修羅場での反応:</span>
-              <p className="text-slate-200 italic">{char.stressTestCrisis}</p>
-            </div>
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          {[
+            { label: '① 褒められた時', text: char.stressTestCompliment, key: 'stressTestCompliment' },
+            { label: '② からかわれた時', text: char.stressTestTeased, key: 'stressTestTeased' },
+            { label: '③ 修羅場での反応', text: char.stressTestCrisis, key: 'stressTestCrisis' },
+            { label: '④ 静かな夜・二人きりの時', text: char.stressTestNightQuiet, key: 'stressTestNightQuiet' },
+            { label: '⑤ 好意の告白・自覚時', text: char.stressTestConfession, key: 'stressTestConfession' },
+          ].map((item) => {
+            const patterns = char.tonePatterns?.[item.key] || [];
+            if (!item.text && patterns.length === 0) return null;
+            return (
+              <div key={item.key} className="bg-slate-950/80 p-3 rounded border border-slate-800 space-y-1.5">
+                <span className="text-amber-400/90 block text-[10px] font-mono font-bold">{item.label}</span>
+                {item.text && <p className="text-slate-200 italic">「{item.text}」</p>}
+                {patterns.length > 0 && (
+                  <div className="pt-1.5 border-t border-slate-800/80 space-y-1">
+                    {patterns.map((pat, i) => (
+                      <p key={i} className="text-[10px] text-amber-300/80 bg-slate-900/80 p-1 rounded">
+                        ↳ 「{pat}」
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

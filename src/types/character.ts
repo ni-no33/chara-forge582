@@ -51,7 +51,9 @@ export interface CharacterProfile {
   wardrobe?: WardrobeItem[]; // 衣装ワードローブ（部屋着複数・私服複数・下着等を画像付きで無制限管理）
   situationReactions?: SituationReaction[]; // シチュエーション別リアクション帳（嫉妬、からかい、寝起き等）
   phasePatterns?: { [phaseKey: string]: string[] }; // 各フェーズのマルチ反応パターン（通常、不意打ち、弱り時等）
-  intimacyPatterns?: { [levelKey: string]: string[] }; // 親密度のマルチ反応パターン
+  intimacyPatterns?: { [levelKey: string]: string[] }; // 親密度のマルチ反応パターン（攻め時、受動時、二人きり時等）
+  tonePatterns?: { [toneKey: string]: string[] }; // 会話例文のマルチパターン（平常時、不意打ち、甘え時等）
+  dominantPatterns?: { [domKey: string]: string[] }; // 攻守・感覚ディテールのマルチパターン
   dangerLevel: 'S' | 'A' | 'B' | 'C' | 'UNKNOWN';
 
   // 基本属性・社会的立場

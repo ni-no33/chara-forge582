@@ -45,36 +45,50 @@ export function compileToSillyTavernV2(char: CharacterProfile): any {
     '【得意と致命的ポンコツ】\n' + (char.clumsyArea || '未設定')
   ];
 
+  // Helper to format field with patterns
+  const formatWithPattern = (text: string | undefined, patterns: string[] | undefined) => {
+    if (!text && (!patterns || patterns.length === 0)) return '';
+    const base = text || '';
+    if (patterns && patterns.length > 0) {
+      return base + ' (差分パターン: ' + patterns.join(' / ') + ')';
+    }
+    return base;
+  };
+
   // Enriched Intimacy & Night Persona (Level 1 - Level 7)
   if (
     char.intimacyLevel1 ||
     char.intimacyLevel4 ||
     char.intimacyLevel7 ||
     char.voiceBreathing ||
-    char.aftercareBehavior
+    char.aftercareBehavior ||
+    char.dominantLeadStyle
   ) {
+    const domPat = char.dominantPatterns || {};
+    const intPat = char.intimacyPatterns || {};
+
     personalityParts.push(
       '【親愛・親密グラデーション＆夜の態度 (7-Stage Intimacy Gradient)】\n' +
       '・攻守ポジション: ' + (char.positionType === 'top' ? '完全攻め(Top)' : char.positionType === 'bottom' ? '完全受け(Bottom)' : char.positionType === 'switch' ? 'リバ/両対応' : char.positionType === 'reversal' ? '豹変リバ' : '未設定') + '\n' +
-      (char.dominantLeadStyle ? '・【攻め時の手つき・主導権】: ' + char.dominantLeadStyle + '\n' : '') +
-      (char.dominantVerbalCommand ? '・【攻め時の言葉責め・支配命令】: ' + char.dominantVerbalCommand + '\n' : '') +
-      (char.dominantPossessionDrive ? '・【相手を追い詰めるツボ・支配欲】: ' + char.dominantPossessionDrive + '\n' : '') +
-      (char.dominantAftercare ? '・【攻め側のアフターケア・甘やかし】: ' + char.dominantAftercare + '\n' : '') +
-      '・Level 1 [視線・距離の意識]: ' + (char.intimacyLevel1 || '未設定') + '\n' +
-      '・Level 2 [偶発的接触]: ' + (char.intimacyLevel2 || '未設定') + '\n' +
-      '・Level 3 [日常スキンシップ]: ' + (char.intimacyLevel3 || '未設定') + '\n' +
-      '・Level 4 [境界線・密着]: ' + (char.intimacyLevel4 || '未設定') + '\n' +
-      '・Level 5 [理性の融解]: ' + (char.intimacyLevel5 || '未設定') + '\n' +
-      '・Level 6 [夜の入口・脱衣]: ' + (char.intimacyLevel6 || '未設定') + '\n' +
-      '・Level 7 [完全開放・夜の顔]: ' + (char.intimacyLevel7 || '未設定') + '\n' +
-      '・急所・敏感ゾーン: ' + (char.sensitiveAreas || '未設定') + '\n' +
-      '・触れられた時の息遣い・声: ' + (char.voiceBreathing || '未設定') + '\n' +
-      '・視線・恥じらいの仕草: ' + (char.gazeExpression || '未設定') + '\n' +
-      '・主導権・攻守ダイナミクス: ' + (char.dominanceRole || '未設定') + '\n' +
-      '・事前の誘い方・戸惑い: ' + (char.preIntimacyBehavior || '未設定') + '\n' +
-      '・★ 事後の余韻・アフターケア: ' + (char.aftercareBehavior || '未設定') + '\n' +
-      '・嗜好・フェチ・執着: ' + (char.fetishObsession || '未設定') + '\n' +
-      '・境界線・許容限度・NG: ' + (char.intimacyBoundaries || '未設定') +
+      (char.dominantLeadStyle ? '・【攻め/リード時の手つき・主導権】: ' + formatWithPattern(char.dominantLeadStyle, domPat['dominantLeadStyle']) + '\n' : '') +
+      (char.dominantVerbalCommand ? '・【攻め/リード時の言葉責め・支配命令】: ' + formatWithPattern(char.dominantVerbalCommand, domPat['dominantVerbalCommand']) + '\n' : '') +
+      (char.dominantPossessionDrive ? '・【相手を追い詰めるツボ・支配欲】: ' + formatWithPattern(char.dominantPossessionDrive, domPat['dominantPossessionDrive']) + '\n' : '') +
+      (char.dominantAftercare ? '・【攻め/リード側のアフターケア・甘やかし】: ' + formatWithPattern(char.dominantAftercare, domPat['dominantAftercare']) + '\n' : '') +
+      '・Level 1 [視線・日常の距離感]: ' + (formatWithPattern(char.intimacyLevel1, intPat['intimacyLevel1']) || '未設定') + '\n' +
+      '・Level 2 [偶発的接触・不意の接近]: ' + (formatWithPattern(char.intimacyLevel2, intPat['intimacyLevel2']) || '未設定') + '\n' +
+      '・Level 3 [意図的スキンシップ]: ' + (formatWithPattern(char.intimacyLevel3, intPat['intimacyLevel3']) || '未設定') + '\n' +
+      '・Level 4 [境界線の揺らぎ・密着]: ' + (formatWithPattern(char.intimacyLevel4, intPat['intimacyLevel4']) || '未設定') + '\n' +
+      '・Level 5 [理性の融解・昂ぶり]: ' + (formatWithPattern(char.intimacyLevel5, intPat['intimacyLevel5']) || '未設定') + '\n' +
+      '・Level 6 [夜の入口・二人きりの境界]: ' + (formatWithPattern(char.intimacyLevel6, intPat['intimacyLevel6']) || '未設定') + '\n' +
+      '・Level 7 [完全開放・本能の露呈]: ' + (formatWithPattern(char.intimacyLevel7, intPat['intimacyLevel7']) || '未設定') + '\n' +
+      '・急所・敏感ゾーン: ' + (formatWithPattern(char.sensitiveAreas, domPat['sensitiveAreas']) || '未設定') + '\n' +
+      '・触れられた時の息遣い・声: ' + (formatWithPattern(char.voiceBreathing, domPat['voiceBreathing']) || '未設定') + '\n' +
+      '・視線・表情・仕草: ' + (formatWithPattern(char.gazeExpression, domPat['gazeExpression']) || '未設定') + '\n' +
+      '・主導権・攻守ダイナミクス: ' + (formatWithPattern(char.dominanceRole, domPat['dominanceRole']) || '未設定') + '\n' +
+      '・事前の誘い方・戸惑い: ' + (formatWithPattern(char.preIntimacyBehavior, domPat['preIntimacyBehavior']) || '未設定') + '\n' +
+      '・★ 事後の余韻・アフターケア: ' + (formatWithPattern(char.aftercareBehavior, domPat['aftercareBehavior']) || '未設定') + '\n' +
+      '・嗜好・フェチ・執着: ' + (formatWithPattern(char.fetishObsession, domPat['fetishObsession']) || '未設定') + '\n' +
+      '・境界線・許容限度・NG: ' + (formatWithPattern(char.intimacyBoundaries, domPat['intimacyBoundaries']) || '未設定') +
       (char.heatCycleSuppressor ? '\n・【発情期(ヒート)と現代抑制剤】: ' + char.heatCycleSuppressor : '') +
       (char.markingInstinct ? '\n・【匂い付けマーキング・甘噛み】: ' + char.markingInstinct : '') +
       (char.demiWeakSensitivities ? '\n・【種族特有の急所・性感帯】: ' + char.demiWeakSensitivities : '')
@@ -106,20 +120,51 @@ export function compileToSillyTavernV2(char: CharacterProfile): any {
   ];
 
   let mesExample = '';
+  const tonePat = char.tonePatterns || {};
+
   if (char.stressTestCompliment) {
     mesExample += '<START>\n{{user}}: 「可愛いね、よく似合ってるよ」\n{{char}}: ' + char.stressTestCompliment + '\n';
   }
+  if (tonePat['stressTestCompliment']?.length) {
+    for (const pat of tonePat['stressTestCompliment']) {
+      mesExample += '<START>\n{{user}}: 「可愛いね、よく似合ってるよ」\n{{char}}: ' + pat + '\n';
+    }
+  }
+
   if (char.stressTestTeased) {
     mesExample += '<START>\n{{user}}: （ちょっと意地悪にからかう）\n{{char}}: ' + char.stressTestTeased + '\n';
   }
+  if (tonePat['stressTestTeased']?.length) {
+    for (const pat of tonePat['stressTestTeased']) {
+      mesExample += '<START>\n{{user}}: （ちょっと意地悪にからかう）\n{{char}}: ' + pat + '\n';
+    }
+  }
+
   if (char.stressTestCrisis) {
     mesExample += '<START>\n{{user}}: 「大丈夫か…！？ 無茶するな！」\n{{char}}: ' + char.stressTestCrisis + '\n';
   }
+  if (tonePat['stressTestCrisis']?.length) {
+    for (const pat of tonePat['stressTestCrisis']) {
+      mesExample += '<START>\n{{user}}: 「大丈夫か…！？ 無茶するな！」\n{{char}}: ' + pat + '\n';
+    }
+  }
+
   if (char.stressTestNightQuiet) {
     mesExample += '<START>\n{{user}}: （静かな夜、ふたりきりの部屋で隣に座る）\n{{char}}: ' + char.stressTestNightQuiet + '\n';
   }
+  if (tonePat['stressTestNightQuiet']?.length) {
+    for (const pat of tonePat['stressTestNightQuiet']) {
+      mesExample += '<START>\n{{user}}: （静かな夜、ふたりきりの部屋で隣に座る）\n{{char}}: ' + pat + '\n';
+    }
+  }
+
   if (char.stressTestConfession) {
     mesExample += '<START>\n{{user}}: 「君のことが本当に好きだよ」\n{{char}}: ' + char.stressTestConfession + '\n';
+  }
+  if (tonePat['stressTestConfession']?.length) {
+    for (const pat of tonePat['stressTestConfession']) {
+      mesExample += '<START>\n{{user}}: 「君のことが本当に好きだよ」\n{{char}}: ' + pat + '\n';
+    }
   }
 
   const firstMes = char.phase1Early

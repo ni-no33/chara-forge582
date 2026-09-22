@@ -300,6 +300,8 @@ export function sanitizeCharacter(c: any): CharacterProfile {
     situationReactions: validSituationReactions,
     phasePatterns: validPhasePatterns,
     intimacyPatterns: typeof c?.intimacyPatterns === 'object' && c?.intimacyPatterns !== null ? c.intimacyPatterns : {},
+    tonePatterns: typeof c?.tonePatterns === 'object' && c?.tonePatterns !== null ? c.tonePatterns : {},
+    dominantPatterns: typeof c?.dominantPatterns === 'object' && c?.dominantPatterns !== null ? c.dominantPatterns : {},
     galleryImages: Array.isArray(c?.galleryImages) ? c.galleryImages : [],
     stats: {
       ...base.stats,
@@ -444,6 +446,8 @@ export function createNewCharacter(): CharacterProfile {
     situationReactions: [],
     phasePatterns: {},
     intimacyPatterns: {},
+    tonePatterns: {},
+    dominantPatterns: {},
     sdxlBaseTags: '',
     sdxlNegative: 'lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, blurry',
 
