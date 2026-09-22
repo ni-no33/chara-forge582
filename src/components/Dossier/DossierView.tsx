@@ -22,7 +22,8 @@ import {
   PawPrint,
   Ear,
   Zap,
-  Plus
+  Plus,
+  MessageSquare
 } from 'lucide-react';
 
 interface DossierViewProps {
@@ -159,15 +160,33 @@ export const DossierView: React.FC<DossierViewProps> = ({
               </div>
             </div>
 
-            {/* Active Display Image */}
+            {/* Active Display Image & Wardrobe Lookbook Viewer */}
             {(() => {
+              const wardrobe = char.wardrobe || [];
               const gallery = char.galleryImages || [];
-              const activeSlot = gallery.find((g) => g.id === activeImageId);
-              const displayUrl =
-                activeImageId === 'main' ? char.avatarImage : activeSlot?.url || char.avatarImage;
-              const slotLabel =
-                activeImageId === 'main' ? 'メインポートレート' : activeSlot?.label || '衣装差分';
-              const outfitNotes = activeImageId !== 'main' ? activeSlot?.outfitNotes : null;
+
+              // Determine current selected item
+              let displayUrl = char.avatarImage;
+              let slotTitle = 'メインポートレート';
+              let outfitDesc = char.defaultOutfit || null;
+              let underwearInfo = char.underwearRoomwear || null;
+
+              if (activeImageId !== 'main') {
+                const wardrobeItem = wardrobe.find((w) => w.id === activeImageId);
+                if (wardrobeItem) {
+                  displayUrl = wardrobeItem.imageUrl || char.avatarImage;
+                  slotTitle = wardrobeItem.title;
+                  outfitDesc = wardrobeItem.description || null;
+                  underwearInfo = wardrobeItem.underwearDetails || null;
+                } else {
+                  const gallerySlot = gallery.find((g) => g.id === activeImageId);
+                  if (gallerySlot) {
+                    displayUrl = gallerySlot.url || char.avatarImage;
+                    slotTitle = gallerySlot.label;
+                    outfitDesc = gallerySlot.outfitNotes || null;
+                  }
+                }
+              }
 
               return (
                 <div className="space-y-2.5">
@@ -175,7 +194,7 @@ export const DossierView: React.FC<DossierViewProps> = ({
                     {displayUrl ? (
                       <img
                         src={displayUrl}
-                        alt={slotLabel}
+                        alt={slotTitle}
                         className="w-full h-full object-cover object-top transition duration-200"
                       />
                     ) : (
@@ -187,10 +206,10 @@ export const DossierView: React.FC<DossierViewProps> = ({
                         {onJumpToStep && (
                           <button
                             type="button"
-                            onClick={() => onJumpToStep(0)}
+                            onClick={() => onJumpToStep(1)}
                             className="inline-block px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs rounded border border-slate-700 cursor-pointer"
                           >
-                            画像を取り込む
+                            衣装・画像を登録する
                           </button>
                         )}
                       </div>
@@ -200,87 +219,97 @@ export const DossierView: React.FC<DossierViewProps> = ({
                     <div className="absolute top-2 right-4 w-4 h-9 border-2 border-slate-400 rounded-full opacity-60 pointer-events-none" />
 
                     {/* Active Label Badge */}
-                    <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/75 backdrop-blur text-[10px] font-mono text-cyan-300 border border-slate-700 pointer-events-none">
-                      {slotLabel}
+                    <div className="absolute bottom-2 left-2 px-2.5 py-1 rounded bg-black/85 backdrop-blur text-[11px] font-bold text-amber-300 border border-amber-500/40 pointer-events-none flex items-center gap-1.5 shadow-lg">
+                      <Shirt size={12} className="text-amber-400" />
+                      <span>{slotTitle}</span>
                     </div>
                   </div>
 
-                  {/* Outfit Note if any */}
-                  {outfitNotes && (
-                    <div className="text-[11px] text-slate-300 bg-[#121620] px-2.5 py-1.5 rounded border border-[#252e3d] flex items-center gap-1.5">
-                      <Shirt size={12} className="text-amber-400 shrink-0" />
-                      <span className="truncate">{outfitNotes}</span>
+                  {/* Wardrobe Lookbook Description Box */}
+                  {(outfitDesc || underwearInfo) && (
+                    <div className="bg-[#121620] p-2.5 rounded-lg border border-[#252e3d] space-y-1.5 text-xs text-slate-300 animate-in fade-in">
+                      {outfitDesc && (
+                        <p className="leading-relaxed">
+                          <span className="text-slate-400 text-[10px] font-bold block mb-0.5">【衣装・シルエット】</span>
+                          {outfitDesc}
+                        </p>
+                      )}
+                      {underwearInfo && (
+                        <div className="pt-1 border-t border-slate-800/80 text-[11px] text-amber-300/90 flex items-start gap-1">
+                          <span className="shrink-0 font-bold">👙 下着事情:</span>
+                          <span>{underwearInfo}</span>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {/* Outfit Thumbnail Strip (Interactive Switcher) */}
+                  {/* Wardrobe & Outfit Thumbnail Strip */}
                   <div className="pt-1">
-                    <span className="text-[10px] font-mono text-slate-400 block mb-1.5 flex items-center gap-1">
-                      <Layers size={11} /> 衣装・差分ギャラリー切り替え:
+                    <span className="text-[10px] font-mono text-slate-400 block mb-1.5 flex items-center justify-between">
+                      <span className="flex items-center gap-1">
+                        <Layers size={11} className="text-amber-400" />
+                        ワードローブ着せ替え ({wardrobe.length > 0 ? `${wardrobe.length} 着` : '基本'}):
+                      </span>
+                      {onJumpToStep && (
+                        <button
+                          type="button"
+                          onClick={() => onJumpToStep(1)}
+                          className="text-[10px] text-amber-400 hover:underline flex items-center gap-0.5"
+                        >
+                          ＋衣装を追加
+                        </button>
+                      )}
                     </span>
-                    <div className="grid grid-cols-5 gap-1.5">
-                      {/* Main */}
+
+                    {/* Scrollable / Grid Outfit Cards */}
+                    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                      {/* Main Avatar Slot */}
                       <button
                         type="button"
                         onClick={() => setActiveImageId('main')}
-                        className={`aspect-square rounded border overflow-hidden relative group transition ${
+                        className={`w-14 h-14 shrink-0 rounded-lg border overflow-hidden relative transition ${
                           activeImageId === 'main'
-                            ? 'border-amber-400 ring-2 ring-amber-400/40'
+                            ? 'border-amber-400 ring-2 ring-amber-400/50'
                             : 'border-slate-800 opacity-70 hover:opacity-100'
                         }`}
-                        title="メインポートレート"
+                        title="基本メイン"
                       >
                         {char.avatarImage ? (
                           <img src={char.avatarImage} alt="Main" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[9px] text-slate-500">
-                            主
+                            基本
                           </div>
                         )}
-                        <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-center text-slate-300 truncate">
+                        <span className="absolute bottom-0 inset-x-0 bg-black/85 text-[8px] text-center text-amber-300 truncate px-0.5">
                           基本
                         </span>
                       </button>
 
-                      {/* 4 Slots */}
-                      {[
-                        { id: 'slot-job', label: '職業' },
-                        { id: 'slot-casual', label: '私服' },
-                        { id: 'slot-special', label: '正装' },
-                        { id: 'slot-night', label: '夜' }
-                      ].map((s) => {
-                        const slotItem = gallery.find((g) => g.id === s.id);
-                        const hasImg = Boolean(slotItem?.url);
-
+                      {/* Wardrobe Items */}
+                      {wardrobe.map((w) => {
+                        const hasImg = Boolean(w.imageUrl);
                         return (
                           <button
-                            key={s.id}
+                            key={w.id}
                             type="button"
-                            onClick={() => {
-                              if (hasImg) {
-                                setActiveImageId(s.id);
-                              } else if (onJumpToStep) {
-                                onJumpToStep(0);
-                              }
-                            }}
-                            className={`aspect-square rounded border overflow-hidden relative transition ${
-                              activeImageId === s.id
-                                ? 'border-cyan-400 ring-2 ring-cyan-400/40'
-                                : hasImg
-                                ? 'border-slate-800 opacity-70 hover:opacity-100'
-                                : 'border-dashed border-slate-800/80 bg-slate-950/40 hover:border-slate-700'
+                            onClick={() => setActiveImageId(w.id)}
+                            className={`w-14 h-14 shrink-0 rounded-lg border overflow-hidden relative transition ${
+                              activeImageId === w.id
+                                ? 'border-amber-400 ring-2 ring-amber-400/50'
+                                : 'border-slate-800 opacity-70 hover:opacity-100'
                             }`}
-                            title={slotItem?.label || s.label}
+                            title={w.title}
                           >
                             {hasImg ? (
-                              <img src={slotItem!.url} alt={s.label} className="w-full h-full object-cover" />
+                              <img src={w.imageUrl} alt={w.title} className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center text-[8px] text-slate-600">
-                                <span>+</span>
+                              <div className="w-full h-full bg-slate-900 flex flex-col items-center justify-center text-[8px] text-slate-400 p-0.5">
+                                <span>👗</span>
                               </div>
                             )}
-                            <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-center text-slate-300 truncate">
-                              {s.label}
+                            <span className="absolute bottom-0 inset-x-0 bg-black/85 text-[8px] text-center text-slate-200 truncate px-0.5">
+                              {w.title}
                             </span>
                           </button>
                         );
@@ -724,39 +753,147 @@ export const DossierView: React.FC<DossierViewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-red-500 flex flex-col justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+          {/* Phase 1 */}
+          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-red-500 flex flex-col justify-between space-y-2">
             <div>
               <span className="text-[10px] font-mono text-red-400 block font-bold">PHASE 1 // 初期警戒</span>
-              <p className="text-slate-300 mt-1.5 leading-relaxed">{char.phase1Early || '未設定'}</p>
+              <p className="text-slate-300 mt-1 leading-relaxed">{char.phase1Early || '未設定'}</p>
+              {char.phasePatterns?.['phase1Early'] && char.phasePatterns['phase1Early'].length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold block">差分パターン:</span>
+                  {char.phasePatterns['phase1Early'].map((pat, i) => (
+                    <p key={i} className="text-[11px] text-red-300/90 bg-red-950/30 p-1.5 rounded border border-red-900/30">
+                      {pat}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="mt-3 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 80-100%</div>
+            <div className="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 80-100%</div>
           </div>
 
-          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-amber-500 flex flex-col justify-between">
+          {/* Phase 2 */}
+          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-amber-500 flex flex-col justify-between space-y-2">
             <div>
               <span className="text-[10px] font-mono text-amber-400 block font-bold">PHASE 2 // 軟化の契機</span>
-              <p className="text-slate-300 mt-1.5 leading-relaxed">{char.phase2Softening || '未設定'}</p>
+              <p className="text-slate-300 mt-1 leading-relaxed">{char.phase2Softening || '未設定'}</p>
+              {char.phasePatterns?.['phase2Softening'] && char.phasePatterns['phase2Softening'].length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold block">差分パターン:</span>
+                  {char.phasePatterns['phase2Softening'].map((pat, i) => (
+                    <p key={i} className="text-[11px] text-amber-300/90 bg-amber-950/30 p-1.5 rounded border border-amber-900/30">
+                      {pat}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="mt-3 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 50-70%</div>
+            <div className="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 50-70%</div>
           </div>
 
-          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-cyan-500 flex flex-col justify-between">
+          {/* Phase 3 */}
+          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-cyan-500 flex flex-col justify-between space-y-2">
             <div>
               <span className="text-[10px] font-mono text-cyan-400 block font-bold">PHASE 3 // 信頼と弱音</span>
-              <p className="text-slate-300 mt-1.5 leading-relaxed">{char.phase3Trust || '未設定'}</p>
+              <p className="text-slate-300 mt-1 leading-relaxed">{char.phase3Trust || '未設定'}</p>
+              {char.phasePatterns?.['phase3Trust'] && char.phasePatterns['phase3Trust'].length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold block">差分パターン:</span>
+                  {char.phasePatterns['phase3Trust'].map((pat, i) => (
+                    <p key={i} className="text-[11px] text-cyan-300/90 bg-cyan-950/30 p-1.5 rounded border border-cyan-900/30">
+                      {pat}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="mt-3 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 20-40%</div>
+            <div className="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 20-40%</div>
           </div>
 
-          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-pink-500 flex flex-col justify-between">
+          {/* Phase 4 */}
+          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-pink-500 flex flex-col justify-between space-y-2">
             <div>
               <span className="text-[10px] font-mono text-pink-400 block font-bold">PHASE 4 // 親愛と執着</span>
-              <p className="text-slate-300 mt-1.5 leading-relaxed">{char.phase4Attachment || '未設定'}</p>
+              <p className="text-slate-300 mt-1 leading-relaxed">{char.phase4Attachment || '未設定'}</p>
+              {char.phasePatterns?.['phase4Attachment'] && char.phasePatterns['phase4Attachment'].length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold block">差分パターン:</span>
+                  {char.phasePatterns['phase4Attachment'].map((pat, i) => (
+                    <p key={i} className="text-[11px] text-pink-300/90 bg-pink-950/30 p-1.5 rounded border border-pink-900/30">
+                      {pat}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="mt-3 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 0% (完全開錠)</div>
+            <div className="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">壁厚: 0% (完全開錠)</div>
+          </div>
+
+          {/* Phase 5 */}
+          <div className="bg-slate-950/80 p-3.5 rounded-lg border-t-2 border-purple-500 flex flex-col justify-between space-y-2">
+            <div>
+              <span className="text-[10px] font-mono text-purple-400 block font-bold">PHASE 5 // 唯一無二</span>
+              <p className="text-slate-300 mt-1 leading-relaxed">{char.phase5Irreplaceable || '未設定'}</p>
+              {char.phasePatterns?.['phase5Irreplaceable'] && char.phasePatterns['phase5Irreplaceable'].length > 0 && (
+                <div className="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                  <span className="text-[9px] text-slate-500 font-bold block">差分パターン:</span>
+                  {char.phasePatterns['phase5Irreplaceable'].map((pat, i) => (
+                    <p key={i} className="text-[11px] text-purple-300/90 bg-purple-950/30 p-1.5 rounded border border-purple-900/30">
+                      {pat}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800/80 pt-1">共依存 / 魂の結びつき</div>
           </div>
         </div>
+
+        {/* Situation Reactions Book Display */}
+        {char.situationReactions && char.situationReactions.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-slate-800/80 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-purple-300 font-bold flex items-center gap-1.5">
+                <MessageSquare size={13} className="text-purple-400" />
+                SITUATION REACTIONS (シチュエーション別言動・代表セリフ帳):
+              </span>
+              {onJumpToStep && (
+                <button
+                  type="button"
+                  onClick={() => onJumpToStep(5)}
+                  className="text-[10px] text-purple-300 hover:underline"
+                >
+                  ＋お題を追加
+                </button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {char.situationReactions.map((sr) => (
+                <div
+                  key={sr.id}
+                  className="p-3 bg-[#131722] rounded-lg border border-purple-900/40 space-y-1.5 text-xs hover:border-purple-600/50 transition"
+                >
+                  <div className="font-bold text-purple-300 text-[11px] flex items-center gap-1 border-b border-purple-900/30 pb-1">
+                    <span>📌</span>
+                    <span>{sr.situation}</span>
+                  </div>
+                  {sr.behavior && (
+                    <p className="text-slate-300 text-[11px] leading-relaxed">
+                      {sr.behavior}
+                    </p>
+                  )}
+                  {sr.dialogue && (
+                    <div className="p-1.5 bg-purple-950/40 rounded border border-purple-800/40 text-purple-200 text-[11px] font-medium leading-relaxed italic">
+                      {sr.dialogue}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Enriched Intimacy / Night Persona Card */}

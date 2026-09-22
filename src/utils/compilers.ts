@@ -27,10 +27,9 @@ export function compileToSillyTavernV2(char: CharacterProfile): any {
     '【固有の特徴・記号】' + (char.anchorFeatures || '特になし'),
     '【パーソナルカラー】' + (char.personalColors || '未設定'),
     '【普段着】' + (char.defaultOutfit || '未設定'),
-    '【服装バリエーション・衣装ギャラリー】' + (char.outfitVariations || '') +
-      (char.galleryImages && char.galleryImages.length > 0
-        ? '\n' + char.galleryImages.map(g => '・' + g.label + (g.outfitNotes ? ': ' + g.outfitNotes : '')).join('\n')
-        : ''),
+    '【衣装ワードローブ・ルックブック】' + (char.wardrobe && char.wardrobe.length > 0
+      ? '\n' + char.wardrobe.map(w => '・[' + w.title + '] ' + w.description + (w.underwearDetails ? ' (下着: ' + w.underwearDetails + ')' : '')).join('\n')
+      : (char.outfitVariations || '')),
     '【生活感・日常】\n・部屋の様子: ' + (char.roomState || '未設定') + '\n・休日の過ごし方: ' + (char.holidayHabits || '未設定') + '\n・食の好み: ' + (char.foodPreferences || '未設定') + '\n・嗜好品(酒/煙草): ' + (char.drinkTobacco || '未設定') + '\n・睡眠習慣: ' + (char.sleepHabits || '未設定')
   ];
 
@@ -88,13 +87,22 @@ export function compileToSillyTavernV2(char: CharacterProfile): any {
     '【初期警戒度 / 心の壁】' + char.wallThickness + '%',
     '【初対面時の内面品定め】' + (char.firstImpression || '未設定'),
     '【関係性の変化段階 (Relationship Progression)】',
-    '・Phase 1 [初期態度・警戒]: ' + (char.phase1Early || '未設定'),
-    '・Phase 2 [困惑と軟化の契機]: ' + (char.phase2Softening || '未設定'),
-    '・Phase 3 [信頼と弱音の開示]: ' + (char.phase3Trust || '未設定'),
-    '・Phase 4 [親愛と執着]: ' + (char.phase4Attachment || '未設定'),
-    '・Phase 5 [唯一無二・魂の依存]: ' + (char.phase5Irreplaceable || '未設定'),
+    '・Phase 1 [初期態度・警戒]: ' + (char.phase1Early || '未設定') +
+      (char.phasePatterns?.['phase1Early']?.length ? ' (差分: ' + char.phasePatterns['phase1Early'].join(' / ') + ')' : ''),
+    '・Phase 2 [困惑と軟化の契機]: ' + (char.phase2Softening || '未設定') +
+      (char.phasePatterns?.['phase2Softening']?.length ? ' (差分: ' + char.phasePatterns['phase2Softening'].join(' / ') + ')' : ''),
+    '・Phase 3 [信頼と弱音の開示]: ' + (char.phase3Trust || '未設定') +
+      (char.phasePatterns?.['phase3Trust']?.length ? ' (差分: ' + char.phasePatterns['phase3Trust'].join(' / ') + ')' : ''),
+    '・Phase 4 [親愛と執着]: ' + (char.phase4Attachment || '未設定') +
+      (char.phasePatterns?.['phase4Attachment']?.length ? ' (差分: ' + char.phasePatterns['phase4Attachment'].join(' / ') + ')' : ''),
+    '・Phase 5 [唯一無二・魂の依存]: ' + (char.phase5Irreplaceable || '未設定') +
+      (char.phasePatterns?.['phase5Irreplaceable']?.length ? ' (差分: ' + char.phasePatterns['phase5Irreplaceable'].join(' / ') + ')' : ''),
     '【嫉妬・独占欲の表れ方】' + (char.jealousyBehavior || '未設定'),
-    '【喧嘩・衝突時の態度】' + (char.quarrelBehavior || '未設定')
+    '【喧嘩・衝突時の態度】' + (char.quarrelBehavior || '未設定') +
+      (char.situationReactions && char.situationReactions.length > 0
+        ? '\n\n【シチュエーション別言動・代表セリフ帳】\n' +
+          char.situationReactions.map(sr => '・[' + sr.situation + ']: ' + sr.behavior + (sr.dialogue ? ' ' + sr.dialogue : '')).join('\n')
+        : '')
   ];
 
   let mesExample = '';

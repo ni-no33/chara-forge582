@@ -23,6 +23,23 @@ export interface CharacterImageSlot {
   outfitNotes?: string; // 衣装の特徴・着用シチュエーション
 }
 
+export interface WardrobeItem {
+  id: string;
+  title: string;        // 例: "普段着（外出）", "部屋着（夏）", "下着（勝負）"
+  category: 'everyday' | 'roomwear' | 'underwear' | 'formal' | 'special' | 'other';
+  imageUrl?: string;    // 衣装ごとの立ち絵・写真（Base64）
+  description: string;  // 服の形状・色・素材・着こなし
+  underwearDetails?: string; // 合わせている下着や下着事情（ノーブラ、見せブラ等）
+  sdxlTags?: string;    // SDXL用プロンプト補助
+}
+
+export interface SituationReaction {
+  id: string;
+  situation: string;    // 例: "嫉妬したとき", "からかわれたとき", "朝起きた直後"
+  behavior: string;     // 態度・身体反応・癖
+  dialogue: string;     // 代表セリフ
+}
+
 export interface CharacterProfile {
   id: string;
   name: string;
@@ -31,6 +48,10 @@ export interface CharacterProfile {
   summary: string;
   avatarImage: string; // メインポートレート (Base64 or URL)
   galleryImages?: CharacterImageSlot[]; // 衣装・差分ギャラリー（メイン以外に4枚等）
+  wardrobe?: WardrobeItem[]; // 衣装ワードローブ（部屋着複数・私服複数・下着等を画像付きで無制限管理）
+  situationReactions?: SituationReaction[]; // シチュエーション別リアクション帳（嫉妬、からかい、寝起き等）
+  phasePatterns?: { [phaseKey: string]: string[] }; // 各フェーズのマルチ反応パターン（通常、不意打ち、弱り時等）
+  intimacyPatterns?: { [levelKey: string]: string[] }; // 親密度のマルチ反応パターン
   dangerLevel: 'S' | 'A' | 'B' | 'C' | 'UNKNOWN';
 
   // 基本属性・社会的立場

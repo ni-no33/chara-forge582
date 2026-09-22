@@ -38,6 +38,62 @@ export const DEFAULT_SAMPLE_CHARACTER: CharacterProfile = {
   defaultOutfit: '丈の合っていないオーバーサイズのフード付きローブ、インナーは白のハイネックノースリーブ、プリーツスカート、革の編み上げロングブーツ',
   underwearRoomwear: '着古したダボダボの白シャツ一枚にショートパンツ。下着は飾り気のないシンプルな淡い青色コットン',
   outfitVariations: '研究室での白衣姿、部屋着のヨレヨレのダボダボシャツと短パン、潜入捜査用のタイトな黒レザー礼装',
+  wardrobe: [
+    {
+      id: 'w-default',
+      title: '観測官ローブ（普段着）',
+      category: 'everyday',
+      description: '丈の合っていないオーバーサイズのフード付き黒魔導ローブ、インナーは白のハイネックノースリーブ、プリーツスカート、革の編み上げロングブーツ。袖口がだぼだぼ。',
+      underwearDetails: '実用的な淡い水色のコットンブラ＆ショーツ。締め付けが苦手。',
+      sdxlTags: 'oversized dark wizard robe, sleeveless turtleneck, pleated skirt, lace-up leather boots'
+    },
+    {
+      id: 'w-roomwear',
+      title: '部屋着（だぼシャツ短パン）',
+      category: 'roomwear',
+      description: '着古して生地の薄くなったオーバーサイズの白シャツ一枚に短パン。胸元が緩く開きやすく、尻尾を出すためにズボンの後ろを破いている。',
+      underwearDetails: '部屋では基本ノーブラ。下はシンプルな綿のショーツのみ。',
+      sdxlTags: 'oversized white shirt, sleep shorts, casual roomwear, relaxed messy hair'
+    },
+    {
+      id: 'w-underwear',
+      title: 'お気に入りの下着事情',
+      category: 'underwear',
+      description: '装飾の少ないシンプルな黒または淡いネイビーのノンワイヤー下着。肌が敏感なためレースがチクチクするのを嫌う。',
+      underwearDetails: '{{user}}に見られると顔を真っ赤にして両腕で隠す。',
+      sdxlTags: 'simple black cotton underwear, blushing, cover chest'
+    }
+  ],
+  situationReactions: [
+    {
+      id: 'sr-jealousy',
+      situation: '{{user}}が他の人と仲良く話していた時',
+      behavior: '遠くから壁に隠れてジト目で睨みつけ、無意識に尻尾を床にバタバタと激しく叩きつける。後で話しかけられるとわざとらしくそっぽを向く。',
+      dialogue: '「……べ、別に何とも思ってないし。アンタが誰とヘラヘラ笑ってようと、私の研究には1ミリも関係ないでしょ！」'
+    },
+    {
+      id: 'sr-teased',
+      situation: '頭や耳の付け根をいきなり撫でられた時',
+      behavior: 'ビクッと身体を跳ねさせて硬直。耳がペタッと倒れ、顔を真っ赤に染めながら睨みつけるが、喉の奥から小さなゴロゴロ音が漏れ始める。',
+      dialogue: '「なっ……いきなり触るなバカ！……っ、ん……変なとこ撫でるな……耳は、敏感なんだからぁ…！」'
+    },
+    {
+      id: 'sr-midnight',
+      situation: '夜中に二人きりで作業中、ふと目が合った時',
+      behavior: 'マグカップを両手で握りしめ、視線を泳がせながら湯気をふーふー吹く。いつもより声のトーンがワントーン低く柔らかくなる。',
+      dialogue: '「……まだ起きてるの？ アンタが隣にいると……その、時計の針の音がやけにうるさく感じるのよね」'
+    }
+  ],
+  phasePatterns: {
+    phase1Early: [
+      '威嚇と警戒の基本姿勢: 万年筆を構えて距離を保ち、業務連絡以外は一切口を開かない。',
+      '不意打ち時: 急に声をかけられるとビクッと肩を震わせ、手元の書類をバラまいて真っ赤になる。'
+    ],
+    phase3Trust: [
+      '平常の甘え: 研究に行き詰まると無言で{{user}}の背中に額をゴツンと押し当てて脱力する。',
+      '弱音の開示: 「ねえ……もし私が何の成果も出せなくなったら、アンタも私を捨てるの……？」'
+    ]
+  },
   sdxlBaseTags: '1girl, lyra_arcadia, silver hair, low twintails, ahoge, red eye, purple eye, heterochromia, mole under left eye, bandaid on nose, oversized dark wizard robe, sleeveless turtleneck, black skirt, boots, finely detailed, warm soft lighting',
   sdxlNegative: 'lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, blurry',
 
@@ -199,10 +255,51 @@ export function sanitizeCharacter(c: any): CharacterProfile {
     validTimeline = DEFAULT_SAMPLE_CHARACTER.timeline || [];
   }
 
+  // Backward compatibility: Convert legacy outfits to wardrobe if wardrobe is empty
+  let validWardrobe = Array.isArray(c?.wardrobe) ? c.wardrobe : [];
+  if (validWardrobe.length === 0 && (c?.defaultOutfit || c?.underwearRoomwear)) {
+    if (c?.defaultOutfit) {
+      validWardrobe.push({
+        id: `w-legacy-default-${Date.now()}`,
+        title: '普段着（メイン）',
+        category: 'everyday',
+        description: c.defaultOutfit,
+        underwearDetails: '',
+        imageUrl: ''
+      });
+    }
+    if (c?.underwearRoomwear) {
+      validWardrobe.push({
+        id: `w-legacy-room-${Date.now()}`,
+        title: '部屋着・下着',
+        category: 'roomwear',
+        description: c.underwearRoomwear,
+        underwearDetails: '',
+        imageUrl: ''
+      });
+    }
+  } else if (isDefault && validWardrobe.length === 0) {
+    validWardrobe = DEFAULT_SAMPLE_CHARACTER.wardrobe || [];
+  }
+
+  let validSituationReactions = Array.isArray(c?.situationReactions) ? c.situationReactions : [];
+  if (isDefault && validSituationReactions.length === 0) {
+    validSituationReactions = DEFAULT_SAMPLE_CHARACTER.situationReactions || [];
+  }
+
+  let validPhasePatterns = typeof c?.phasePatterns === 'object' && c?.phasePatterns !== null ? c.phasePatterns : {};
+  if (isDefault && Object.keys(validPhasePatterns).length === 0) {
+    validPhasePatterns = DEFAULT_SAMPLE_CHARACTER.phasePatterns || {};
+  }
+
   return {
     ...base,
     ...c,
     timeline: validTimeline,
+    wardrobe: validWardrobe,
+    situationReactions: validSituationReactions,
+    phasePatterns: validPhasePatterns,
+    intimacyPatterns: typeof c?.intimacyPatterns === 'object' && c?.intimacyPatterns !== null ? c.intimacyPatterns : {},
     galleryImages: Array.isArray(c?.galleryImages) ? c.galleryImages : [],
     stats: {
       ...base.stats,
@@ -343,6 +440,10 @@ export function createNewCharacter(): CharacterProfile {
     defaultOutfit: '',
     underwearRoomwear: '',
     outfitVariations: '',
+    wardrobe: [],
+    situationReactions: [],
+    phasePatterns: {},
+    intimacyPatterns: {},
     sdxlBaseTags: '',
     sdxlNegative: 'lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, blurry',
 
